@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VM Provisioning Portal</title>
+
+    <environment names="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+        <!--[if lte IE 8]><script src="~/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="~/css/main.css" />
+		<!--[if lte IE 9]><link rel="stylesheet" href="~/css/ie9.css" /><![endif]-->
+		<!--[if lte IE 8]><link rel="stylesheet" href="~/css/ie8.css" /><![endif]-->
+    </environment>
+    <environment names="Staging,Production">
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+        <!--[if lte IE 8]><script src="~/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="~/css/main.css" />
+		<!--[if lte IE 9]><link rel="stylesheet" href="~/css/ie9.css" /><![endif]-->
+		<!--[if lte IE 8]><link rel="stylesheet" href="~/css/ie8.css" /><![endif]-->
+    </environment>
+</head>
+<body>
+<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a asp-action="Index" asp-controller="Home" class="logo">
+									<img src="~/images/Capgemini_logo_300dpi.png" alt="" style="width: 300px" /><span></span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a asp-action="Index" asp-controller="Home">Home</a></li>
+							<li><a asp-action="Index" asp-controller="ProvisioningStatus">Your Request Status</a></li>
+							<li><a asp-action="Index" asp-controller="VirtualMachineOptions">VM Options</a></li>
+							<li><a asp-action="Index" asp-controller="ApiDescription">Our API</a></li>
+						</ul>
+					</nav>
+
+                    @RenderBody();
+				
+
+				<!-- Footer -->
+					<footer id="footer">
+						<div class="inner">
+							<ul class="copyright">
+								<li>&copy; Untitled. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+
+    <environment names="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/skel.min.js"></script>
+		<script src="~/js/util.js"></script>
+		<!--[if lte IE 8]><script src="~/js/ie/respond.min.js"></script><![endif]-->
+		<script src="~/js/main.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.3.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery">
+        </script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
+        </script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+        <script src="~/js/skel.min.js"></script>
+		<script src="~/js/util.js"></script>
+		<!--[if lte IE 8]><script src="~/js/ie/respond.min.js"></script><![endif]-->
+		<script src="~/js/main.js"></script>
+    </environment>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>
