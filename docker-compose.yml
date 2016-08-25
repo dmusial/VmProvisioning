@@ -1,0 +1,38 @@
+version: '2'
+
+services:
+    provisioningportal:
+        build:
+            context: ./ProvisioningPortal
+            dockerfile: Dockerfile
+        container_name: provisioningportal
+        ports:
+            - "5000:5000"
+        environment:
+            VIRTUAL_HOST: ~^provisioningportal\..*\.xip\.io
+        networks:
+            - provisioningnetwork
+        
+    provisioningportalconnector:
+        build:
+            context: ./ProvisioningPortalConnector
+            dockerfile: Dockerfile
+        ports:
+            - "5001:5001"
+        environment:
+            VIRTUAL_HOST: ~^provisioningportalconnector\..*\.xip\.io
+        networks:
+            - provisioningnetwork
+
+    nginx:
+        image: jwilder/nginx-proxy
+        container_name: nginx_reverse_proxy
+        ports:
+            - "80:80"
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock
+        networks:
+            - provisioningnetwork
+
+networks:
+    provisioningnetwork:

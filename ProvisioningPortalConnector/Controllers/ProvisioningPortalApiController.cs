@@ -29,7 +29,7 @@ namespace ProvisioningPortalConnector.Controllers
                 
                 var jsonRequest = JsonConvert.SerializeObject(request);
                 var requestContent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-                var response = httpClient.PostAsync("http://localhost:5000/api/requestvm", requestContent).Result;
+                var response = httpClient.PostAsync("http://provisioningportal:5000/api/requestvm", requestContent).Result;
                 var responseContent = response.Content.ReadAsStringAsync().Result;
 
                 dynamic deserializedReponse = JsonConvert.DeserializeObject(responseContent);

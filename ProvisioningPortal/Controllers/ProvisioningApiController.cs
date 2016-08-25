@@ -20,6 +20,7 @@ namespace CloudProvisioningPortal.Controllers
         {
             var allRegisteredRequests = _store.GetAll().Select(r => new VmProvisioningRequestListItem()
             {
+                RequestId = r.RequestId,
                 Requestor = r.Requestor,
                 VmSize = r.VmSize,
                 Status = r.Status,
