@@ -16,9 +16,10 @@ namespace CloudProvisioningPortal.Controllers
         }
 
         [HttpGet]
+        [Route("provisioningstatus")]
         public IActionResult Index()
         {
-            var allRegisteredRequests = _store.GetAll().Select(r => new VmProvisioningRequestListItem()
+            var allRegisteredRequests = _store.GetAll().OrderByDescending(r => r.CreationDate).Select(r => new VmProvisioningRequestListItem()
             {
                 RequestId = r.RequestId,
                 Requestor = r.Requestor,

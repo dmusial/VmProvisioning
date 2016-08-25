@@ -1,0 +1,6 @@
+<ul>
+    <li ng-repeat="provisioningStatus in provisioningStatuses">
+        <span>Request {{provisioningStatus.requestId}} registered on {{provisioningStatus.creationDate | date:"dd MMM yyyy 'at' h:mma"}} by {{provisioningStatus.requestor}}</span><br />
+        <span>Current request status: {{provisioningStatus.status}}</span>
+    </li>
+</ul>
