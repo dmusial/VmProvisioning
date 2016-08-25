@@ -31,6 +31,7 @@ namespace ProvisioningPortalConnector
             loggerFactory.AddDebug();
 
             app.UseStaticFiles();
+            app.UseAcceptHeaderCleanupMiddleware();
 
             app.UseMvc(routes =>
             {

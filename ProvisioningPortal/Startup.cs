@@ -46,7 +46,6 @@ namespace CloudProvisioningPortal
             }
 
             app.UseStaticFiles();
-            app.UseAcceptHeaderCleanupMiddleware();
 
             app.UseMvc(routes =>
             {
