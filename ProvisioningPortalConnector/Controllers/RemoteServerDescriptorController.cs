@@ -30,6 +30,38 @@ namespace ProvisioningPortalConnector.Controllers
                 Required = true
             });
 
+            connectorDescriptor.Actions.Add(BuildRequestStatusActionDescriptor());
+            connectorDescriptor.Actions.Add(BuildRequestVmActionDescriptor());
+            serverDescriptor.Connectors.Add(connectorDescriptor);
+
+            return new ObjectResult(serverDescriptor);
+        }
+
+        private ActionDescriptor BuildRequestStatusActionDescriptor()
+        {
+            var requestVmAction = new ActionDescriptor();
+            requestVmAction.Name = "requeststatus";
+            requestVmAction.DisplayName = "Check VM Request Status";
+            requestVmAction.Path = "requeststatus";
+            requestVmAction.Inputs.Add(new InputDescriptor() 
+            {
+                Name = "RequestId",
+                Type = "String",
+                Required = true
+            });
+
+            requestVmAction.Output = new InputDescriptor()
+            {
+                Name = "Status",
+                Type = "String",
+                Required = true
+            };
+
+            return requestVmAction;
+        }
+
+        private ActionDescriptor BuildRequestVmActionDescriptor()
+        {
             var requestVmAction = new ActionDescriptor();
             requestVmAction.Name = "requestvm";
             requestVmAction.DisplayName = "Request New Virtual Machine";
@@ -55,10 +87,7 @@ namespace ProvisioningPortalConnector.Controllers
                 Required = true
             };
 
-            connectorDescriptor.Actions.Add(requestVmAction);
-            serverDescriptor.Connectors.Add(connectorDescriptor);
-
-            return new ObjectResult(serverDescriptor);
+            return requestVmAction;
         }
     }
 }

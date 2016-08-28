@@ -11,6 +11,22 @@ namespace ProvisioningPortalConnector.Controllers
     public class ProvisioningPortalApiController : Controller
     {
         [HttpPost]
+        [Route("requeststatus")]
+        public IActionResult RequestStatus([FromBody] CheckStatusRequest checkStatusRequest)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var requestStatusUri = string.Format("http://provisioningportal:5000/api/requeststatus/{0}", checkStatusRequest.Inputs.RequestId);
+                var response = httpClient.GetAsync(requestStatusUri).Result;
+                var responseContent = response.Content.ReadAsStringAsync().Result;
+
+                var checkStatusReponse = new CheckStatusResponse(responseContent);
+                return new ObjectResult(checkStatusReponse);
+            }
+
+        }
+
+        [HttpPost]
         [Route("requestvm")]
         public IActionResult RequestVm([FromBody] VmProvisioningRequest requestDetails)
         {
@@ -33,7 +49,7 @@ namespace ProvisioningPortalConnector.Controllers
                 var responseContent = response.Content.ReadAsStringAsync().Result;
 
                 dynamic deserializedReponse = JsonConvert.DeserializeObject(responseContent);
-                var provisioningResult = new VmProvisioningResponse((Guid)deserializedReponse.requestId, (string)deserializedReponse.status);
+                var provisioningResult = new VmProvisioningResponse((Guid)deserializedReponse.requestId);
 
                 return new ObjectResult(provisioningResult);
             }

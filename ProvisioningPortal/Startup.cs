@@ -1,9 +1,13 @@
+using System;
+using CloudProvisioningPortal.Jobs;
 using CloudProvisioningPortal.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Quartz;
+using Quartz.Impl;
 
 namespace CloudProvisioningPortal
 {
@@ -21,19 +25,26 @@ namespace CloudProvisioningPortal
 
         public IConfigurationRoot Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
+            var schedulerFactory = new StdSchedulerFactory();
+            var scheduler = schedulerFactory.GetScheduler().Result;
+            
             services.AddMvc();
             services.AddSingleton<InMemoryProvisioningStore>();
+            services.AddSingleton(scheduler);
+            services.AddTransient<JobFactory>();
+            services.AddTransient<FulfillRequestJob>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            var scheduler = (IScheduler)serviceProvider.GetService(typeof(IScheduler));
+            scheduler.JobFactory = (JobFactory)serviceProvider.GetService(typeof(JobFactory));
+            scheduler.Start();
 
             if (env.IsDevelopment())
             {

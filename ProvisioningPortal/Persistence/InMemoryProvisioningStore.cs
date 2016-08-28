@@ -1,4 +1,6 @@
+using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace CloudProvisioningPortal.Persistence
 {
@@ -9,6 +11,11 @@ namespace CloudProvisioningPortal.Persistence
         public InMemoryProvisioningStore()
         {
             _requests = new List<VmProvisioningRequest>();
+        }
+
+        public VmProvisioningRequest Get(Guid requestId)
+        {
+            return _requests.FirstOrDefault(r => r.RequestId == requestId);
         }
 
         public List<VmProvisioningRequest> GetAll()

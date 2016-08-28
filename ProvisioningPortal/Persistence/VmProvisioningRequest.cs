@@ -18,5 +18,15 @@ namespace CloudProvisioningPortal.Persistence
         public string VmSize { get; private set; }
         public string Status { get; private set; }
         public DateTime CreationDate { get; set; }
+
+        public void StartProvisioning()
+        {
+            Status = "In progress";
+        }
+
+        public void Complete()
+        {
+            Status = "Completed";
+        }
     }
 }
