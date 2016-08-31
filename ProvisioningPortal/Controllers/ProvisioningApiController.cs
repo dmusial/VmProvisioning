@@ -6,7 +6,6 @@ using CloudProvisioningPortal.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Quartz;
-using Quartz.Impl;
 
 namespace CloudProvisioningPortal.Controllers
 {
