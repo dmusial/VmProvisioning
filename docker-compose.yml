@@ -24,6 +24,17 @@ services:
         networks:
             - provisioningnetwork
 
+    remedy9connector:
+        build:
+            context: ./Remedy9Connector
+            dockerfile: Dockerfile
+        ports:
+            - "5002:5002"
+        environment:
+            VIRTUAL_HOST: ~^remedy9connector\..*\.xip\.io
+        networks:
+            - provisioningnetwork
+
     nginx:
         image: jwilder/nginx-proxy
         container_name: nginx_reverse_proxy

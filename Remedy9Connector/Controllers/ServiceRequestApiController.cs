@@ -1,15 +1,25 @@
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Remedy9Connector.Models;
+using Remedy9Connector.Requests;
 
 namespace Remedy9Connector.Controllers
 {
     [Route("api")]
     public class ServiceRequestApiController : Controller
     {
+        private const string _baseRemedyAddress = "http://remedy90.lukaszpiech.pl:8008";
+
+        private readonly ILogger _logger;
+
+        public ServiceRequestApiController (ILoggerFactory loggerFactory)
+        {
+            _logger = loggerFactory.CreateLogger<ServiceRequestApiController>();
+        }
+
         [HttpPost]
         [Route("userservicerequest")]
         public IActionResult CreateUserServiceRequest([FromBody] UserServiceRequest userServiceRequest)
@@ -21,8 +31,9 @@ namespace Remedy9Connector.Controllers
 
             var token = Authenticate();
             var createdTicketId = CreateUserServiceRequest(token, userServiceRequest);
+            var incidentNumber = GetIncidentNumber(token, createdTicketId);
 
-            return new ObjectResult(new UserServiceRequestResult(createdTicketId));
+            return new ObjectResult(new UserServiceRequestResult(incidentNumber));
         }
 
         [HttpPost]
@@ -44,48 +55,46 @@ namespace Remedy9Connector.Controllers
         {
             using (var httpClient = new HttpClient())
             {
-                var loginAndPass = string.Format("username={0}&password={1}", "Allen", "password");
-                var loginRequestContent = new StringContent(loginAndPass, Encoding.UTF8, "application/json");
-                var loginUri = "http://remedy90.lukaszpiech.pl:8008/api/jwt/login";
-                var response = httpClient.PostAsync(loginUri, loginRequestContent).Result;
-                
+                var authorizationRequest = new AuthorizationRequest(
+                    _baseRemedyAddress, 
+                    "Allen", 
+                    "password"); // later will come from outside
+                var response = httpClient.SendAsync(authorizationRequest).Result;
+
                 return response.Content.ReadAsStringAsync().Result;
             }
         }
 
-        private string CreateUserServiceRequest(string authenticationToken, UserServiceRequest userServiceRequest)
+        private string CreateUserServiceRequest(string token, UserServiceRequest userServiceRequest)
         {
             using (var httpClient = new HttpClient())
             {
-                var userServiceRequestDetails = new
-                {
-                    Values = new 
-                    {
-                        First_Name = "Capgemini",
-                        Last_Name = "MyCloud",
-                        Description = userServiceRequest.Inputs.Description,
-                        Impact = "3-Moderate/Limited",
-                        Urgency = "3-Medium",
-                        Status = "Assigned",
-                        Reported_Source = "Systems Management" ,
-                        Service_Type = "User Service Request",
-                        z1D_Action = "CREATE",
-                        External_System = "Capgemini MyCloud",
-                        External_ID = userServiceRequest.Inputs.RefrenceTaskId
-                    }
-                };
+                var request = new CreateUserServiceRequestRequest(
+                    _baseRemedyAddress,
+                    token,
+                    userServiceRequest.Inputs.Description,
+                    userServiceRequest.Inputs.RefrenceTaskId);
 
-                var authToken = string.Format("AR-JWT {0}", authenticationToken);
-                var userServiceRequestDetailsJson = JsonConvert.SerializeObject(userServiceRequestDetails);
-                var body = new StringContent(userServiceRequestDetailsJson, Encoding.UTF8, "application/json");
-                
-                var loginUri = "http://remedy90.lukaszpiech.pl:8008/api/arsys/v1/entry/HPD:IncidentInterface_Create";
-                var response = httpClient.PostAsync(loginUri, body).Result;
+                var response = httpClient.SendAsync(request).Result;
 
                 var ticketLocation = response.Headers.GetValues("Location").First();
-                var ticketId = ticketLocation.Substring(ticketLocation.LastIndexOf('/'));
+                var ticketId = ticketLocation.Substring(ticketLocation.LastIndexOf('/') + 1);
 
                 return ticketId;
+            }
+        }
+
+        private string GetIncidentNumber(string token, string ticketId)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var request = new GetIncidentNumberRequest(_baseRemedyAddress, token, ticketId);
+
+                var response = httpClient.SendAsync(request).Result;
+                var responseContent = response.Content.ReadAsStringAsync().Result;
+                dynamic ticketDetails = JsonConvert.DeserializeObject(responseContent);
+
+                return ticketDetails.values["Incident Number"];
             }
         }
 
@@ -93,12 +102,13 @@ namespace Remedy9Connector.Controllers
         {
             using (var httpClient = new HttpClient())
             {
-                var statusCheckUri = string.Format("http://remedy90.lukaszpiech.pl:8008/api/arsys/v1/entry/HPD:IncidentInterface_Create/{0}", ticketId);
-                var response = httpClient.GetAsync(statusCheckUri).Result;
+                var request = new GetIncidentStatusRequest(_baseRemedyAddress, token, ticketId);
+
+                var response = httpClient.SendAsync(request).Result;
                 var responseContent = response.Content.ReadAsStringAsync().Result;
                 dynamic ticketDetails = JsonConvert.DeserializeObject(responseContent);
 
-                return (string)ticketDetails.Values.Status;
+                return ticketDetails.values.Status;
             }
         }
     }

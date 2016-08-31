@@ -6,7 +6,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceRoot}\\ProvisioningPortalConnector\\bin\\Debug\\netcoreapp1.0\\ProvisioningPortalConnector.dll",
+            "program": "${workspaceRoot}\\Remedy9Connector\\bin\\Debug\\netcoreapp1.0\\Remedy9Connector.dll",
             "args": [],
             "cwd": "${workspaceRoot}",
             "stopAtEntry": false,
